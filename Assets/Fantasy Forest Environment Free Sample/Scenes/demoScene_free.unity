@@ -641,6 +641,10 @@ MonoBehaviour:
   terrainLayer:
     serializedVersion: 2
     m_Bits: 8
+  enableMouseLook: 1
+  mouseSensitivity: 2
+  maxLookUpAngle: 80
+  maxLookDownAngle: 80
 --- !u!1001 &1302150549
 PrefabInstance:
   m_ObjectHideFlags: 0

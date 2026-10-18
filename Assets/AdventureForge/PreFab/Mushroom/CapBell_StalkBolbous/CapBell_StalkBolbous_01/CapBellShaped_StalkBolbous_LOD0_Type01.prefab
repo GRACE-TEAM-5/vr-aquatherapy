@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2357914}
   - component: {fileID: 5047373802882771039}
   - component: {fileID: 1917157648963983906}
+  - component: {fileID: -7415931034966422908}
   m_Layer: 6
   m_Name: CapBellShaped_StalkBolbous_LOD0_Type01
   m_TagString: Spawnable
@@ -130,3 +131,16 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: d046e387fb2f18041936ce78e3c5d5d8, type: 3}
+--- !u!114 &-7415931034966422908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6585d33789e23723cb94723861ea155c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable
+  collectSound: {fileID: 8300000, guid: 7a10849f9c2782270a8a3c23209022d3, type: 3}

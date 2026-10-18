@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3320144}
   - component: {fileID: 2360966}
   - component: {fileID: -5335667695194526404}
+  - component: {fileID: -6213381251426165290}
   m_Layer: 6
   m_Name: CapConvex_StalkBolbous_LOD0_Type04
   m_TagString: Spawnable
@@ -113,3 +114,16 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: feb7130396d774b419a66f9767cbcb2e, type: 3}
+--- !u!114 &-6213381251426165290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6585d33789e23723cb94723861ea155c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable
+  collectSound: {fileID: 8300000, guid: 7a10849f9c2782270a8a3c23209022d3, type: 3}

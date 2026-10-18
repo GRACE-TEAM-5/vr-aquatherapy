@@ -38,11 +38,22 @@ public class ObjectSpawner : MonoBehaviour
         if (prefabsToSpawn.Length == 0) return;
 
         // 1. Calculate Position
-        Vector3 spawnPos = camera.transform.position + (camera.transform.forward * spawnAheadDistance);
+        Vector3 forward = camera.transform.forward;
+        forward.y = 0f;
+        if (forward.sqrMagnitude < 0.001f)
+            forward = Vector3.forward;
+        else
+            forward.Normalize();
+        Vector3 right = camera.transform.right;
+        right.y = 0f;
+        if (right.sqrMagnitude < 0.001f)
+            right = Vector3.right;
+        else
+            right.Normalize();
+        Vector3 spawnPos = camera.transform.position + (forward * spawnAheadDistance);
         float randomX = Random.Range(-spawnWidth / 2f, spawnWidth / 2f);
         float randomZ = Random.Range(-2f, 2f);
-        spawnPos.x += randomX;
-        spawnPos.z += randomZ;
+        spawnPos += right * randomX + forward * randomZ;
 
         // 2. Pick Random Prefab
         GameObject prefab = prefabsToSpawn[Random.Range(0, prefabsToSpawn.Length)];
@@ -72,6 +83,7 @@ public class ObjectSpawner : MonoBehaviour
         }
         
         spawnedObjects.Add(instance);
+
     }
 
     void CleanupOldObjects(Camera camera)
@@ -82,6 +94,12 @@ public class ObjectSpawner : MonoBehaviour
         for (int i = spawnedObjects.Count - 1; i >= 0; i--)
         {
             GameObject obj = spawnedObjects[i];
+            if (obj == null)
+            {
+                spawnedObjects.RemoveAt(i);
+                continue;
+            }
+
             float distanceBehind = Vector3.Dot(camera.transform.forward, obj.transform.position - camera.transform.position);
             if (distanceBehind < -despawnBehindDistance)
             {
