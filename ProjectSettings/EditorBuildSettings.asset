@@ -4,6 +4,24 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Forrest.unity
+    guid: 89950671cec0d37479b4efb1d5c89366
+  - enabled: 1
+    path: Assets/Scenes/Main scene.unity
+    guid: 262a84542e5940a479215e80c2ab3455
+  - enabled: 1
+    path: Assets/Scenes/Flight.unity
+    guid: a7dce66182b604b43b503588378bab4e
+  - enabled: 1
+    path: Assets/Scenes/Sea.unity
+    guid: 673986985dacc274b88ae23d1481e246
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 2e6412b69e5cb244692d5bfaf410d1fd, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 91c83994b92345347a52ab14e49aff82, type: 2}
   m_UseUCBPForAssetBundles: 0
