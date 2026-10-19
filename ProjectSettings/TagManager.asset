@@ -31,14 +31,18 @@ TagManager:
   - SamplesInfoPanel
   - QDSUIToggleCheckboxRadio
   - QDSUIToggleThumbnail
+  - Terrain
+  - Mushroom
+  - Seashell
+  - Spawnable
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Terrain
   - Water
   - UI
-  - 
+  - Interactable
   - 
   - 
   - 
