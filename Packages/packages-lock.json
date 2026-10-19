@@ -229,7 +229,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.scriptablebuildpipeline": {
-      "version": "2.6.1",
+      "version": "2.6.2",
       "depth": 2,
       "source": "registry",
       "dependencies": {
@@ -256,7 +256,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.splines": {
-      "version": "2.9.0",
+      "version": "2.9.1",
       "depth": 2,
       "source": "registry",
       "dependencies": {
@@ -353,7 +353,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.management": {
-      "version": "4.5.4",
+      "version": "4.6.1",
       "depth": 2,
       "source": "registry",
       "dependencies": {
