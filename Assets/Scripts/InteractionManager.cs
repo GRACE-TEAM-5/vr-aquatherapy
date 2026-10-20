@@ -10,7 +10,7 @@ public class InteractionManager : MonoBehaviour
 
     private Camera mainCamera;
     private GameObject currentTarget;
-    private bool xrInteractionWasPressed;
+    private bool handPinchWasPressed;
 
     void Start()
     {
@@ -23,19 +23,23 @@ public class InteractionManager : MonoBehaviour
     {
         if (mainCamera == null) return;
 
+        bool handInput = TryGetHandInteraction(out Ray handRay, out bool handPinchPressed);
         bool mouseInput = Input.mousePresent &&
             (Input.GetMouseButton(0) || Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f);
-        Ray ray = mouseInput
+        Ray ray = handInput
+            ? handRay
+            : mouseInput
             ? mainCamera.ScreenPointToRay(Input.mousePosition)
             : new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+        bool collectPressed = WasHandPinchPressed(handPinchPressed);
 
         if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, interactionLayer))
         {
             GameObject target = hit.collider.GetComponentInParent<Interactable>()?.gameObject;
-            if (target != null && Vector3.Distance(mainCamera.transform.position, hit.point) < interactionRadius)
+            if (target != null && Vector3.Distance(ray.origin, hit.point) < interactionRadius)
             {
                 SetCurrentTarget(target);
-                if (Input.GetMouseButtonDown(0) || WasXRInteractionPressed())
+                if (Input.GetMouseButtonDown(0) || collectPressed)
                     PerformInteraction(currentTarget);
             }
             else
@@ -48,7 +52,6 @@ public class InteractionManager : MonoBehaviour
             ClearCurrentTarget();
         }
 
-        WasXRInteractionPressed();
     }
 
     void SetCurrentTarget(GameObject target)
@@ -70,26 +73,48 @@ public class InteractionManager : MonoBehaviour
         currentTarget = null;
     }
 
-    bool WasXRInteractionPressed()
+    bool TryGetHandInteraction(out Ray handRay, out bool pinchPressed)
     {
-        bool pressed = false;
-        var devices = new System.Collections.Generic.List<InputDevice>();
+        handRay = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+        pinchPressed = false;
+        bool handFound = false;
+        var hands = new System.Collections.Generic.List<InputDevice>();
         InputDevices.GetDevicesWithCharacteristics(
-            InputDeviceCharacteristics.Controller | InputDeviceCharacteristics.HeldInHand,
-            devices);
+            InputDeviceCharacteristics.HandTracking | InputDeviceCharacteristics.HeldInHand,
+            hands);
 
-        foreach (InputDevice device in devices)
+        foreach (InputDevice hand in hands)
         {
-            if (device.TryGetFeatureValue(CommonUsages.triggerButton, out bool triggerPressed) && triggerPressed ||
-                device.TryGetFeatureValue(CommonUsages.primaryButton, out bool primaryPressed) && primaryPressed)
+            if (!hand.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position) ||
+                !hand.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation))
+                continue;
+
+            Ray candidateRay = new Ray(position, rotation * Vector3.forward);
+            if (!handFound ||
+                (!Physics.Raycast(handRay, raycastDistance, interactionLayer) &&
+                 Physics.Raycast(candidateRay, raycastDistance, interactionLayer)))
             {
-                pressed = true;
-                break;
+                handRay = candidateRay;
+                handFound = true;
             }
+
+            pinchPressed |= IsHandPinching(hand);
         }
 
-        bool wasPressed = pressed && !xrInteractionWasPressed;
-        xrInteractionWasPressed = pressed;
+        return handFound;
+    }
+
+    bool IsHandPinching(InputDevice hand)
+    {
+        return (hand.TryGetFeatureValue(CommonUsages.triggerButton, out bool trigger) && trigger) ||
+            (hand.TryGetFeatureValue(CommonUsages.primaryButton, out bool primary) && primary) ||
+            (hand.TryGetFeatureValue(CommonUsages.gripButton, out bool grip) && grip);
+    }
+
+    bool WasHandPinchPressed(bool pinchPressed)
+    {
+        bool wasPressed = pinchPressed && !handPinchWasPressed;
+        handPinchWasPressed = pinchPressed;
         return wasPressed;
     }
 

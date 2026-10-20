@@ -27,7 +27,7 @@ public class TerrainFollowingScroller : MonoBehaviour
         Vector3 forward = transform.forward;
         forward.y = 0f;
         if (forward.sqrMagnitude > 0.001f)
-            transform.position += forward.normalized * speed * Time.deltaTime;
+            transform.position += forward.normalized * (speed * Time.deltaTime);
 
         Ray downwardRay = new Ray(transform.position, Vector3.down);
         RaycastHit hit;
