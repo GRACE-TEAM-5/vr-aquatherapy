@@ -70,3 +70,8 @@
 *.meta linguist-generated
 *.prefab linguist-generated
 *.unity linguist-generated
+
+# BEGIN unity vcs doctor
+# Unity attributes kept current by `unity vcs doctor --fix`. Managed block: edits here are overwritten. To opt out of a rule, override it below this block.
+*.pdf filter=lfs diff=lfs merge=lfs -text
+# END unity vcs doctor
