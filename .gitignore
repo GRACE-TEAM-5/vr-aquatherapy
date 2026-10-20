@@ -113,6 +113,7 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+*.tga
 
 # BEGIN unity vcs doctor
 # Unity ignore rules kept current by `unity vcs doctor --fix`. Managed block: edits here are overwritten. To opt out of a rule, negate it below this block (for example `!*.log`).
