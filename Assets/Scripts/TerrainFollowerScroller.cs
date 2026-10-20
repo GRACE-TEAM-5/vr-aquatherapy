@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.XR;
 
-public class TerrainFollowingScroller : MonoBehaviour
+public class TerrainFollowingScroller2 : MonoBehaviour
 {
     public float speed = 1.5f; // How fast the camera moves forward
     public float heightOffset = 2f; // Distance above the terrain
