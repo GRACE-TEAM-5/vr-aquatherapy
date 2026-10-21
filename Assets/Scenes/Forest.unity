@@ -4276,6 +4276,12 @@ MonoBehaviour:
     m_Bits: 64
   raycastDistance: 100
   interactionRadius: 15
+  useControllerRays: 1
+  leftPointer: {fileID: 0}
+  rightPointer: {fileID: 0}
+  collectByGazeDwell: 1
+  dwellTime: 1.5
+  allowMouse: 1
 --- !u!4 &309340392
 Transform:
   m_ObjectHideFlags: 0
@@ -6526,7 +6532,7 @@ GameObject:
   - component: {fileID: 506860873}
   m_Layer: 0
   m_Name: Camera Rig
-  m_TagString: MainCamera
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6548,7 +6554,11 @@ MonoBehaviour:
   terrainLayer:
     serializedVersion: 2
     m_Bits: 8
-  viewTransform: {fileID: 0}
+  viewTransform: {fileID: 858434715}
+  probeHeight: 5
+  stopAtTerrainEdge: 1
+  edgeCheckDistance: 2
+  heightSmoothing: 8
 --- !u!114 &506860868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8687,6 +8697,18 @@ PrefabInstance:
       propertyPath: '_interactors.Array.data[11]'
       value: 
       objectReference: {fileID: 1962258390}
+    - target: {fileID: 5801245061754409418, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: _gravityFactor
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7218948594749983592, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: _layerMask.m_Bits
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 3045052776338443733, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: _layerMask.m_Bits
+      value: 15
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -12502,7 +12524,7 @@ GameObject:
   - component: {fileID: 1067957895}
   m_Layer: 0
   m_Name: LeftEyeAnchor
-  m_TagString: MainCamera
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13383,7 +13405,7 @@ GameObject:
   - component: {fileID: 1141554605}
   - component: {fileID: 1141554604}
   m_Layer: 0
-  m_Name: Spawner
+  m_Name: Mushroom Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13400,7 +13422,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3d634f6ecde98c489b2b860eb19ccb4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObjectSpawner
+  m_EditorClassIdentifier: Assembly-CSharp::CollectibleSpawner
   prefabsToSpawn:
   - {fileID: 195220, guid: a5d1138742629d940ba6df4373f57310, type: 3}
   - {fileID: 118758, guid: c79a726f1bf80484a859f6bb4ce4959f, type: 3}
@@ -13410,10 +13432,15 @@ MonoBehaviour:
   spawnAheadDistance: 15
   despawnBehindDistance: 10
   spawnWidth: 10
+  spawnDepth: 2
+  maxActiveObjects: 30
+  scaleRange: {x: 0.5, y: 1.5}
+  randomYRotation: 1
   heightOffset: 0.1
   terrainLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
+  groundProbeHeight: 20
 --- !u!4 &1141554605
 Transform:
   m_ObjectHideFlags: 0
@@ -19522,7 +19549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1694180951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19553,7 +19580,7 @@ MonoBehaviour:
   _transferOnSecondSelection: 0
   _addNewPointsToFront: 0
   _forwardElement: {fileID: 0}
-  _canvas: {fileID: 0}
+  _canvas: {fileID: 1473156001}
 --- !u!114 &1694180953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20966,7 +20993,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1835061987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20978,7 +21005,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 671fba7b07fb9a04fae51a0ba6ee8799, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RestartButton
+  m_EditorClassIdentifier: Assembly-CSharp::SceneMenu
+  buttons:
+  - buttonName: RestartButton
+    action: 2
+    sceneName: 
+  - buttonName: Back to main menu
+    action: 1
+    sceneName: 
+  menuButtonReturnsToMainMenu: 1
+  followPlayer: 1
+  player: {fileID: 506860871}
 --- !u!4 &1835061988
 Transform:
   m_ObjectHideFlags: 0
@@ -24390,6 +24427,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c67033f580359c4581dff1ccffcca91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!223 &1473156001 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 1852369632254168283, guid: 6b196de96e7d16b4297c1980179ae439, type: 3}
+  m_PrefabInstance: {fileID: 1473155999}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
