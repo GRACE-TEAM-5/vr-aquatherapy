@@ -27,11 +27,10 @@ public class ObjectGrounding : MonoBehaviour
 
     public void Ground()
     {
-        Vector3 origin = transform.position + Vector3.up * probeHeight;
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, probeHeight + 10f, terrainLayer, QueryTriggerInteraction.Ignore))
+        if (Ground.TryGetHeight(transform.position, terrainLayer, probeHeight, out float groundY))
         {
             Vector3 p = transform.position;
-            transform.position = new Vector3(p.x, hit.point.y + heightOffset, p.z);
+            transform.position = new Vector3(p.x, groundY + heightOffset, p.z);
         }
     }
 }

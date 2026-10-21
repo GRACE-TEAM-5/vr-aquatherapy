@@ -37,8 +37,12 @@ public class CollectibleSpawner : MonoBehaviour
     public float heightOffset = 0.1f;
     [Tooltip("Layer(s) of the ground. Use the 'Terrain' layer.")]
     public LayerMask terrainLayer;
-    [Tooltip("The ground probe starts this far above the player's head.")]
+    [Tooltip("The ground probe starts this far above the player's head (only used for non-terrain ground).")]
     public float groundProbeHeight = 20f;
+    [Tooltip("Spawns are skipped when an obstacle (e.g. a tree) is closer than this to the spot.")]
+    public float obstacleClearance = 0.5f;
+    [Tooltip("Layers counted as obstacles for the clearance check. Terrain trees are part of the Terrain layer.")]
+    public LayerMask obstacleLayers = (1 << 0) | (1 << 3);
 
     private float nextSpawnTime;
     private readonly List<GameObject> spawnedObjects = new List<GameObject>();
@@ -125,12 +129,16 @@ public class CollectibleSpawner : MonoBehaviour
             + forward * (aheadDistance + Random.Range(-spawnDepth, spawnDepth))
             + right * Random.Range(-spawnWidth * 0.5f, spawnWidth * 0.5f);
 
-        // Probe from above so uphill terrain is found too; skip the spawn if there is no ground.
-        Vector3 probeOrigin = new Vector3(position.x, view.position.y + groundProbeHeight, position.z);
-        if (!Physics.Raycast(probeOrigin, Vector3.down, out RaycastHit hit, groundProbeHeight + 200f, terrainLayer, QueryTriggerInteraction.Ignore))
+        // Ground height (ignores trees painted on the terrain); skip the spawn if there is no ground.
+        Vector3 probe = new Vector3(position.x, view.position.y, position.z);
+        if (!Ground.TryGetHeight(probe, terrainLayer, groundProbeHeight, out float groundY))
             return;
 
-        position = hit.point + Vector3.up * heightOffset;
+        position = new Vector3(position.x, groundY + heightOffset, position.z);
+
+        // Do not spawn inside a tree or other obstacle.
+        if (Physics.CheckSphere(position + Vector3.up * 1f, obstacleClearance, obstacleLayers, QueryTriggerInteraction.Ignore))
+            return;
         Quaternion rotation = prefab.transform.rotation;
         if (randomYRotation)
             rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f) * rotation;
