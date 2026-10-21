@@ -27,7 +27,7 @@ public class ObjectGrounding : MonoBehaviour
 
     public void Ground()
     {
-        if (Ground.TryGetHeight(transform.position, terrainLayer, probeHeight, out float groundY))
+        if (global::Ground.TryGetHeight(transform.position, terrainLayer, probeHeight, out float groundY))
         {
             Vector3 p = transform.position;
             transform.position = new Vector3(p.x, groundY + heightOffset, p.z);
