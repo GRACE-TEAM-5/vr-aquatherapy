@@ -26,6 +26,22 @@ public class TerrainFollowingScroller : MonoBehaviour
     [Tooltip("How quickly the height follows the terrain. 0 = snap instantly.")]
     public float heightSmoothing = 8f;
 
+    private void OnEnable()
+    {
+        PlayAreaWrapper.PlayerRelocated += HandleRelocated;
+    }
+
+    private void OnDisable()
+    {
+        PlayAreaWrapper.PlayerRelocated -= HandleRelocated;
+    }
+
+    private void HandleRelocated(Vector3 offset)
+    {
+        // Snap to the new ground height while the screen is faded out.
+        FollowTerrain(true);
+    }
+
     private void Start()
     {
         if (viewTransform == null && Camera.main != null)

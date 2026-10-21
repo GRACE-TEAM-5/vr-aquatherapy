@@ -24,6 +24,9 @@ public class CollectibleSpawner : MonoBehaviour
     [Tooltip("Maximum number of spawned objects alive at once. 0 = unlimited.")]
     public int maxActiveObjects = 30;
 
+    [Tooltip("Objects spawned at once after the player was moved to the other side of the map.")]
+    public int spawnBurstAfterRelocation = 6;
+
     [Header("Random Variation")]
     [Tooltip("Uniform scale multiplier applied to the prefab's own scale.")]
     public Vector2 scaleRange = new Vector2(0.75f, 1.25f);
@@ -39,6 +42,45 @@ public class CollectibleSpawner : MonoBehaviour
 
     private float nextSpawnTime;
     private readonly List<GameObject> spawnedObjects = new List<GameObject>();
+
+    private void OnEnable()
+    {
+        PlayAreaWrapper.PlayerRelocated += HandleRelocated;
+    }
+
+    private void OnDisable()
+    {
+        PlayAreaWrapper.PlayerRelocated -= HandleRelocated;
+    }
+
+    /// <summary>Removes every object spawned by this spawner.</summary>
+    public void ClearSpawned()
+    {
+        foreach (GameObject obj in spawnedObjects)
+        {
+            if (obj != null)
+                Destroy(obj);
+        }
+        spawnedObjects.Clear();
+    }
+
+    private void HandleRelocated(Vector3 offset)
+    {
+        // The old objects are now on the other side of the map.
+        ClearSpawned();
+
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null)
+            return;
+
+        // Spread the burst between close range and the normal spawn distance.
+        for (int i = 0; i < spawnBurstAfterRelocation; i++)
+        {
+            float t = spawnBurstAfterRelocation > 1 ? i / (float)(spawnBurstAfterRelocation - 1) : 1f;
+            TrySpawn(mainCamera.transform, Mathf.Lerp(4f, spawnAheadDistance, t));
+        }
+        nextSpawnTime = Time.time + spawnInterval;
+    }
 
     private void Start()
     {
@@ -64,6 +106,11 @@ public class CollectibleSpawner : MonoBehaviour
 
     private void TrySpawn(Transform view)
     {
+        TrySpawn(view, spawnAheadDistance);
+    }
+
+    private void TrySpawn(Transform view, float aheadDistance)
+    {
         if (prefabsToSpawn == null || prefabsToSpawn.Length == 0)
             return;
 
@@ -75,7 +122,7 @@ public class CollectibleSpawner : MonoBehaviour
         Vector3 right = Flatten(view.right, Vector3.right);
 
         Vector3 position = view.position
-            + forward * (spawnAheadDistance + Random.Range(-spawnDepth, spawnDepth))
+            + forward * (aheadDistance + Random.Range(-spawnDepth, spawnDepth))
             + right * Random.Range(-spawnWidth * 0.5f, spawnWidth * 0.5f);
 
         // Probe from above so uphill terrain is found too; skip the spawn if there is no ground.

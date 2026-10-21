@@ -18,10 +18,10 @@ Scene names used in code are constants in `SceneLoader` (`MainMenuScene`, `Fores
 | Folder | Scripts |
 | --- | --- |
 | `Scripts/Core` | `SceneLoader`, `DesktopInput` |
-| `Scripts/UI` | `SceneMenu`, `CollectibleCounterUI` |
+| `Scripts/UI` | `SceneMenu`, `CollectibleCounterUI`, `ScreenFader` |
 | `Scripts/Interaction` | `InteractionManager`, `Interactable`, `CollectibleWithEffect` |
 | `Scripts/Collectibles` | `CollectibleSpawner`, `ObjectGrounding`, `CollectibleCounter` |
-| `Scripts/Movement` | `TerrainFollowingScroller`, `DesktopTerrainFollowingScroller`, `CameraScroller` |
+| `Scripts/Movement` | `TerrainFollowingScroller`, `PlayAreaWrapper`, `DesktopTerrainFollowingScroller`, `CameraScroller` |
 | `Scripts/Editor` | `AquatherapyProjectMigration` (one-time file renames, menu **Aquatherapy > Run Project Migration**) |
 
 ## SceneMenu settings
@@ -47,6 +47,20 @@ On the `Camera Rig` (OVRCameraRig root). Moves the player forward in the look di
 | `View Transform` | `CenterEyeAnchor` | The head; defaults to `Camera.main`. |
 | `Stop At Terrain Edge` | on | Stops moving forward when there is no terrain ahead. |
 | `Height Smoothing` | `8` | How fast the height follows the terrain (0 = snap). |
+
+## PlayAreaWrapper settings
+
+On the `Camera Rig` in Forest and Beach. Players cannot always turn around, so when the head
+gets within `Border Margin` of the map edge while moving outwards, the view fades to black, the
+rig is moved to the opposite side of the map (still facing the same way, so the whole map is ahead
+again) and the view fades back in. The spawners clear their old objects and spawn a few new ones
+right away. Unity terrains cannot be rotated, which is why the player is moved instead of the map.
+
+| Setting | Default | Description |
+| --- | ---: | --- |
+| `Border Margin` | `15` | Distance from the map edge (m) that triggers the relocation. |
+| `Custom Area` | size 0 | Optional play area; with size 0 the bounds of all terrains are used. |
+| `Fade Out / Hold / Fade In Time` | `0.4 / 0.25 / 0.6` | Fade timing in seconds. |
 
 The Meta `Interaction Rig` locomotor has gravity disabled (`_gravityFactor = 0`) in all scenes
 because the scroller controls the height; its character collider also collides with the `Terrain` layer.
@@ -75,13 +89,17 @@ On the `Mushroom Spawner` / `Seashell Spawner` objects.
 | `Raycast Distance` | `100` | Maximum raycast length. |
 | `Interaction Radius` | `15` (scenes) | Maximum distance between pointer origin and target. |
 | `Use Controller Rays` | on | Aim with the Touch controllers (anchors found on the `OVRCameraRig`). |
+| `Use Hand Rays` | on | Aim with tracked hands (Meta system pointer: from the shoulder through the hand). |
+| `Collect By Hand Dwell` / `Hand Dwell Time` | on / `1` | Collect by keeping the hand pointed at an object. |
+| `Collect By Pinch` | on | Collect by pinching thumb and index while pointing. |
+| `Collect By Touch` / `Touch Radius` | on / `0.12` | Collect by touching an object with a hand or controller. |
 | `Collect By Gaze Dwell` | on | Collect by looking at an object for `Dwell Time` seconds. |
 | `Dwell Time` | `1.5` | Seconds of gaze needed. |
 | `Allow Mouse` | on | Aim with the mouse cursor when no headset is active (Editor). |
 
-Targeting order: controller ray → mouse cursor (no headset) → head gaze.
-Collect input: index trigger or A/X on the controllers, index **pinch** with hand tracking,
-left mouse click, or gaze dwell.
+Targeting order: controller ray → hand ray → mouse cursor (no headset) → head gaze.
+Collect input: index trigger or A/X on the controllers; with hand tracking a **pinch**, pointing
+at the object for `Hand Dwell Time`, or touching it; left mouse click; or gaze dwell.
 
 ## Interactable settings
 

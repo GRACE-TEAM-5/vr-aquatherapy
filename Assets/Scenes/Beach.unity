@@ -6403,6 +6403,7 @@ GameObject:
   - component: {fileID: 506860868}
   - component: {fileID: 506860867}
   - component: {fileID: 506860873}
+  - component: {fileID: 506860880}
   m_Layer: 0
   m_Name: Camera Rig
   m_TagString: Untagged
@@ -6602,6 +6603,28 @@ CapsuleCollider:
   m_Height: 0.25
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &506860880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506860866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d721a4821a34383a7af51c177d55fb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayAreaWrapper
+  rig: {fileID: 506860871}
+  viewTransform: {fileID: 858434715}
+  borderMargin: 15
+  customArea:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  fadeOutTime: 0.4
+  holdTime: 0.25
+  fadeInTime: 0.6
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &506905330
 GameObject:
   m_ObjectHideFlags: 0
