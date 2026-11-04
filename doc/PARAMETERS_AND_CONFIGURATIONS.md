@@ -2,74 +2,131 @@
 
 This is a list of the parameters and configuration options available in the project.
 
-## ObjectSpawner settings
+## Scenes
 
-Add `ObjectSpawner` to the scene object responsible for spawning collectibles.
-The component exposes the following Inspector settings:
+| Scene | Path | Purpose |
+| --- | --- | --- |
+| `MainMenu` | `Assets/Scenes/MainMenu.unity` | First scene (build index 0). Buttons: **Forest**, **Beach**, **Quit**. |
+| `Forest` | `Assets/Scenes/Forest.unity` | Forest walk, collect mushrooms. |
+| `Beach` | `Assets/Scenes/Beach.unity` | Beach walk, collect seashells. |
+
+Old prototype scenes live in `Assets/Scenes/Legacy` and are not part of the build.
+Scene names used in code are constants in `SceneLoader` (`MainMenuScene`, `ForestScene`, `BeachScene`).
+
+## Script folders
+
+| Folder | Scripts |
+| --- | --- |
+| `Scripts/Core` | `SceneLoader`, `DesktopInput` |
+| `Scripts/UI` | `SceneMenu`, `CollectibleCounterUI`, `ScreenFader` |
+| `Scripts/Interaction` | `InteractionManager`, `Interactable`, `CollectibleWithEffect` |
+| `Scripts/Collectibles` | `CollectibleSpawner`, `ObjectGrounding`, `CollectibleCounter` |
+| `Scripts/Movement` | `TerrainFollowingScroller`, `PlayAreaWrapper`, `DesktopTerrainFollowingScroller`, `CameraScroller` |
+| `Scripts/Editor` | `AquatherapyProjectMigration` (one-time file renames, menu **Aquatherapy > Run Project Migration**) |
+
+## SceneMenu settings
+
+Add `SceneMenu` to the object that holds a menu canvas (`UI Manager` in every scene).
+
+| Setting | Description |
+| --- | --- |
+| `Buttons` | List of `Button Name` → `Action` (`LoadScene`, `LoadMainMenu`, `RestartScene`, `Quit`) and `Scene Name` (for `LoadScene`). The button is found by GameObject name; Unity UI `Button` and `Toggle` based buttons are supported. |
+| `Menu Button Returns To Main Menu` | The controller **Menu** button (left controller, or the hand-tracking menu gesture) or **Esc** loads the main menu. On in Forest and Beach. |
+| `Follow Player` | Keeps the menu at its start offset from the player rig while the rig moves. On in Forest and Beach. |
+| `Player` | Optional, defaults to the `OVRCameraRig`. |
+
+## TerrainFollowingScroller settings
+
+On the `Camera Rig` (OVRCameraRig root). Moves the player forward in the look direction.
 
 | Setting | Default | Description |
 | --- | ---: | --- |
-| `Prefabs To Spawn` | Empty | Prefabs selected randomly for each spawn. Add every prefab that may appear; the `Spawnable` tag is not read by the script. |
-| `Spawn Interval` | `0.5` seconds | Time between spawn attempts. Lower values create objects more frequently. |
-| `Spawn Ahead Distance` | `10` | Distance in front of the main camera where the spawn position starts. |
-| `Despawn Behind Distance` | `10` | How far behind the camera an object can travel before it is destroyed. |
-| `Spawn Width` | `10` | Width of the random spawn area across the camera's horizontal direction. |
-| `Height Offset` | `0.1` | Vertical offset above the terrain hit point, useful for preventing clipping. |
-| `Terrain Layer` | Empty | Layer mask used by the downward grounding raycast. Set this to `Terrain`. |
+| `Speed` | `1.5` | Forward speed in m/s. |
+| `Height Offset` | `1.6` (scene) | Eye height above the terrain. |
+| `Terrain Layer` | `Terrain` | Layer mask for the ground raycast. |
+| `View Transform` | `CenterEyeAnchor` | The head; defaults to `Camera.main`. |
+| `Stop At Terrain Edge` | on | Stops moving forward when there is no terrain ahead. |
+| `Height Smoothing` | `8` | How fast the height follows the terrain (0 = snap). |
 
-At runtime, each spawned object receives a random uniform-independent scale
-between `0.5` and `1.5` on each axis and a random Y rotation. The object is
-grounded only when the raycast hits the configured terrain layer. Make sure
-every prefab in `Prefabs To Spawn` has the required collider, interaction
-component, and `Interactable` layer if it should be collectable.
+## PlayAreaWrapper settings
+
+On the `Camera Rig` in Forest and Beach. Players cannot always turn around, so when the head
+gets within `Border Margin` of the map edge while moving outwards, the view fades to black, the
+rig is moved to the opposite side of the map (still facing the same way, so the whole map is ahead
+again) and the view fades back in. The spawners clear their old objects and spawn a few new ones
+right away. Unity terrains cannot be rotated, which is why the player is moved instead of the map.
+
+| Setting | Default | Description |
+| --- | ---: | --- |
+| `Border Margin` | `15` | Distance from the map edge (m) that triggers the relocation. |
+| `Custom Area` | size 0 | Optional play area; with size 0 the bounds of all terrains are used. |
+| `Fade Out / Hold / Fade In Time` | `0.4 / 0.25 / 0.6` | Fade timing in seconds. |
+
+The Meta `Interaction Rig` locomotor has gravity disabled (`_gravityFactor = 0`) in all scenes
+because the scroller controls the height; its character collider also collides with the `Terrain` layer.
+
+## CollectibleSpawner settings
+
+On the `Mushroom Spawner` / `Seashell Spawner` objects.
+
+| Setting | Forest | Beach | Description |
+| --- | ---: | ---: | --- |
+| `Prefabs To Spawn` | 4 mushrooms | `Seashell` | Picked at random. Each needs `Interactable` + a collider on the `Interactable` layer. |
+| `Spawn Interval` | `0.75` | `1` | Seconds between spawns. |
+| `Spawn Ahead Distance` | `15` | `12` | Distance in front of the player. |
+| `Despawn Behind Distance` | `10` | `10` | Objects this far behind are removed. |
+| `Spawn Width` / `Spawn Depth` | `10` / `2` | `10` / `3` | Size of the random spawn area. |
+| `Max Active Objects` | `30` | `25` | Cap on spawned objects alive at once (0 = unlimited). |
+| `Scale Range` | `0.5–1.5` | `0.8–1.3` | Uniform multiplier of the prefab's own scale. |
+| `Height Offset` | `0.1` | `0.05` | Offset above the terrain hit point. |
+| `Terrain Layer` | `Terrain` | `Terrain` | The ground probe only hits this layer. Spawns without ground below are skipped. |
 
 ## InteractionManager settings
 
-Add `InteractionManager` to a scene manager object. It requires an active
-camera tagged `MainCamera` and exposes:
-
 | Setting | Default | Description |
 | --- | ---: | --- |
-| `Interaction Layer` | Empty | Layer mask for the interaction raycast. Set this to `Interactable`; colliders on other layers cannot be targeted. |
-| `Raycast Distance` | `100` | Maximum distance of the raycast from the camera. |
-| `Interaction Radius` | `5` | Maximum distance from the camera to the hit point for a target to be accepted. |
+| `Interaction Layer` | `Interactable` | Only colliders on this layer can be targeted. |
+| `Raycast Distance` | `100` | Maximum raycast length. |
+| `Interaction Radius` | `15` (scenes) | Maximum distance between pointer origin and target. |
+| `Use Controller Rays` | on | Aim with the Touch controllers (anchors found on the `OVRCameraRig`). |
+| `Use Hand Rays` | on | Aim with tracked hands (Meta system pointer: from the shoulder through the hand). |
+| `Collect By Hand Dwell` / `Hand Dwell Time` | on / `1` | Collect by keeping the hand pointed at an object. |
+| `Collect By Pinch` | on | Collect by pinching thumb and index while pointing. |
+| `Collect By Touch` / `Touch Radius` | on / `0.12` | Collect by touching an object with a hand or controller. |
+| `Collect By Gaze Dwell` | on | Collect by looking at an object for `Dwell Time` seconds. |
+| `Dwell Time` | `1.5` | Seconds of gaze needed. |
+| `Allow Mouse` | on | Aim with the mouse cursor when no headset is active (Editor). |
 
-When mouse movement or a mouse button is detected, the manager raycasts from
-the mouse position. Otherwise it raycasts forward from the camera, which
-supports headset/controller use. A left mouse click, controller trigger, or
-controller primary button performs the interaction. Hover enter and exit are
-called as the target changes.
-
-The raycast hits a collider first and then looks for `Interactable` on that
-object or one of its parents. This is why collider-bearing children must use
-the `Interactable` layer even when the component is on the prefab root.
+Targeting order: controller ray → hand ray → mouse cursor (no headset) → head gaze.
+Collect input: index trigger or A/X on the controllers; with hand tracking a **pinch**, pointing
+at the object for `Hand Dwell Time`, or touching it; left mouse click; or gaze dwell.
 
 ## Interactable settings
 
-Add `Interactable` to the root of a prefab that can be targeted and collected.
-Its public Inspector setting is:
+Add `Interactable` to the root of a prefab that can be collected.
 
 | Setting | Default | Description |
 | --- | --- | --- |
-| `Collect Sound` | None | Optional `AudioClip` played at the object's position when it is collected. |
+| `Collect Sound` | `Item Sparkle` | Played at the object's position when collected (mushrooms and seashells use the same clip). |
+| `Collect Volume` | `1` | Volume of the collect sound. |
+| `Highlight Color` | yellow | Tint of all child renderers while targeted (restored afterwards). |
 
-`Interactable` highlights the root object's `Renderer` yellow on hover and
-restores it to white when the hover ends. If the renderer is on a child,
-implement a custom interactable class or place the renderer on the same object
-as the component. Collection increments the global collected-prefab counter and
-then destroys the object. An already-collected object cannot be collected
-again.
+Collection increments `CollectibleCounter` (reset on every scene load) and destroys the object.
+The count is shown by `CollectibleCounterUI`, a small head-locked world-space label that appears
+automatically in scenes with an `InteractionManager`.
 
-### ObjectBehaviour settings
+### CollectibleWithEffect settings
 
-Use `ObjectBehaviour` instead of the base `Interactable` when collecting the
-object should also create a visual effect. It inherits `Collect Sound` and
-adds:
+Use instead of `Interactable` when collecting should also spawn an effect.
 
 | Setting | Default | Description |
 | --- | --- | --- |
-| `Spore Effect` | None | Optional prefab instantiated at the collected object's position before the object is destroyed. |
+| `Collect Effect` | None | Prefab instantiated at the object's position (was `sporeEffect`). |
+| `Effect Lifetime` | `5` | Seconds until the effect is destroyed (0 = effect manages itself). |
 
-The effect prefab is spawned without inheriting the collected object's rotation
-or scale. Ensure the effect prefab manages its own lifetime if it should
-disappear after playback.
+## Collectible prefabs
+
+| Prefab | Path |
+| --- | --- |
+| Mushrooms (4) | `Assets/AdventureForge/PreFab/Mushroom/...` |
+| Seashell | `Assets/Prefabs/Collectibles/Seashell.prefab` (copy of the URP seaShell asset, scaled to ~30 cm, sphere collider for easy targeting) |

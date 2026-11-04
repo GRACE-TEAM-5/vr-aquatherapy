@@ -16,10 +16,10 @@ GameObject:
   - component: {fileID: -7415931034966422908}
   m_Layer: 6
   m_Name: CapBellShaped_StalkBolbous_LOD0_Type01
-  m_TagString: Spawnable
+  m_TagString: Mushroom
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &423736
 Transform:
@@ -108,7 +108,9 @@ MonoBehaviour:
   heightOffset: 0.1
   terrainLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
+  continuous: 0
+  probeHeight: 2
 --- !u!64 &1917157648963983906
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -144,3 +146,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
   collectSound: {fileID: 8300000, guid: 7a10849f9c2782270a8a3c23209022d3, type: 3}
+  collectVolume: 1
+  highlightColor: {r: 1, g: 0.9, b: 0.3, a: 1}

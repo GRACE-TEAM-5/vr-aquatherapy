@@ -4,9 +4,19 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 262a84542e5940a479215e80c2ab3455
+  - enabled: 1
+    path: Assets/Scenes/Forest.unity
+    guid: cac4ae1b4c3e23e4d8f829e7d4a76f8b
+  - enabled: 1
+    path: Assets/Scenes/Beach.unity
+    guid: fb1d4e1c74acd1447a47fe45e1b25a89
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 3bca63d35fb69fca9a76c544f116f12c, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 2e6412b69e5cb244692d5bfaf410d1fd, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 2d725a5bd35336eda8156b145e0e9d60, type: 2}
   m_UseUCBPForAssetBundles: 0
